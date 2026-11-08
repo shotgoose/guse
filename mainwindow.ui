@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(54, 54, 54);</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <property name="sizePolicy">
     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -41,13 +44,13 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>68</width>
+          <width>71</width>
           <height>537</height>
          </rect>
         </property>
        </widget>
       </widget>
-      <widget class="QCustomPlot" name="plot" native="true">
+      <widget class="QTabWidget" name="tabWidget">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -56,6 +59,9 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="currentIndex">
+        <number>-1</number>
        </property>
       </widget>
      </widget>
@@ -71,23 +77,36 @@
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuHome">
-    <property name="title">
-     <string>Home</string>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="styleSheet">
+     <string notr="true">QMenuBar { background: #2b2b2b; color: white; }
+QMenuBar::item:selected { background: #444; }
+QMenu { background: #2b2b2b; color: white; }
+QMenu::item:selected { background: #444; }</string>
     </property>
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
    </widget>
-   <addaction name="menuHome"/>
+   <addaction name="menu_File"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionOpen">
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>QCustomPlot</class>
-   <extends>QWidget</extends>
-   <header>qcustomplot.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <tabstops>
   <tabstop>scrollArea</tabstop>
  </tabstops>

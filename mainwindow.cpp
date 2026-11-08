@@ -7,21 +7,30 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    ui->tabWidget->setTabsClosable(true);
+    ui->tabWidget->setMovable(true);
+    connect(ui->tabWidget, &QTabWidget::tabCloseRequested, this, [this](int i) {
+        QWidget *page = ui->tabWidget->widget(i);
+        ui->tabWidget->removeTab(i);
+        page->deleteLater();
+    });
+
     QVector<double> x, y;
     for (int i = 0; i <= 50; ++i) {
         x.append(i / 5.0);
         y.append(cos(x.last()));
     }
 
-    ui->plot->addGraph();
-    ui->plot->graph(0)->setData(x, y);
-    ui->plot->xAxis->setLabel("x");
-    ui->plot->yAxis->setLabel("y");
-    ui->plot->rescaleAxes();
-    ui->plot->replot();
+    // ui->plot->addGraph();
+    // ui->plot->graph(0)->setData(x, y);
+    // ui->plot->xAxis->setLabel("x");
+    // ui->plot->yAxis->setLabel("y");
+    // ui->plot->rescaleAxes();
+    // ui->plot->replot();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
+
