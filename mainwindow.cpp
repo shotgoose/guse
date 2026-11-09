@@ -1,40 +1,44 @@
 #include "mainwindow.h"
 #include "constants.h"
+#include "datatable.h"
 #include "./ui_mainwindow.h"
+#include <QFileDialog>
+#include <QFile>
+#include <QTextStream>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
-    ui->tabWidget->setTabsClosable(true);
-    ui->tabWidget->setMovable(true);
-
     setWindowTitle(QString("GUSE v%1").arg(App::version));
-
-    connect(ui->tabWidget, &QTabWidget::tabCloseRequested, this, [this](int i) {
-        QWidget *page = ui->tabWidget->widget(i);
-        ui->tabWidget->removeTab(i);
-        page->deleteLater();
-    });
-
-    QVector<double> x, y;
-    for (int i = 0; i <= 50; ++i) {
-        x.append(i / 5.0);
-        y.append(cos(x.last()));
-    }
-
-    // ui->plot->addGraph();
-    // ui->plot->graph(0)->setData(x, y);
-    // ui->plot->xAxis->setLabel("x");
-    // ui->plot->yAxis->setLabel("y");
-    // ui->plot->rescaleAxes();
-    // ui->plot->replot();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::on_actionOpen_triggered()
+{
+    QString path = QFileDialog::getOpenFileName(
+        this,
+        "Open Data File",
+        QString(),
+        "Data files (*.csv *.txt *.dat);;All files (*)");
+
+    if (path.isEmpty()) {
+        return;
+    }
+
+    // QFile file(path);
+    // if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    //     QMessageBox::warning(this, "Error", "Could not open " + path);
+    //     return;
+    // }
+
+    std::string stdpath = path.toStdString();
+    DataTable table(stdpath);
 }
 

@@ -2,4 +2,6 @@
 
 TableTab::TableTab(QWidget *parent)
     : QWidget{parent}
-{}
+{
+
+}
