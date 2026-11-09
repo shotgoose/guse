@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "constants.h"
 #include "./ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -9,6 +10,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->tabWidget->setTabsClosable(true);
     ui->tabWidget->setMovable(true);
+
+    setWindowTitle(QString("GUSE v%1").arg(App::version));
+
     connect(ui->tabWidget, &QTabWidget::tabCloseRequested, this, [this](int i) {
         QWidget *page = ui->tabWidget->widget(i);
         ui->tabWidget->removeTab(i);

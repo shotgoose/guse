@@ -13,7 +13,6 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets LinguistTools PrintSup
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets LinguistTools PrintSupport)
 
 set(TS_FILES Guse_en_US.ts)
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(PROJECT_SOURCES
         main.cpp
@@ -25,7 +24,11 @@ set(PROJECT_SOURCES
         ${TS_FILES}
 )
 
-set_source_files_properties(qcustomplot.cpp PROPERTIES COMPILE_OPTIONS "-Wa,-mbig-obj;-Wno-deprecated-declarations")
+if(MSVC)
+    set_source_files_properties(qcustomplot.cpp PROPERTIES COMPILE_OPTIONS "/bigobj;/wd4996")
+else()
+    set_source_files_properties(qcustomplot.cpp PROPERTIES COMPILE_OPTIONS "-Wa,-mbig-obj;-Wno-deprecated-declarations")
+endif()
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(Guse
@@ -33,6 +36,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
         charttab.h charttab.cpp
         tabletab.h tabletab.cpp
+        constants.h
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET Guse APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

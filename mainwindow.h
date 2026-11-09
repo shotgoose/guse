@@ -17,9 +17,6 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
 
-private slots:
-    void on_tabWidget_tabBarDoubleClicked(int index);
-
 private:
     Ui::MainWindow *ui;
 };

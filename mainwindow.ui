@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>GUSE</string>
   </property>
   <property name="styleSheet">
    <string notr="true">background-color: rgb(54, 54, 54);</string>
@@ -44,7 +44,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>71</width>
+          <width>154</width>
           <height>537</height>
          </rect>
         </property>
