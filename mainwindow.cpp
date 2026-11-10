@@ -1,11 +1,13 @@
 #include "mainwindow.h"
 #include "constants.h"
 #include "datatable.h"
+#include "tabletab.h"
 #include "./ui_mainwindow.h"
 #include <QFileDialog>
 #include <QFile>
 #include <QTextStream>
 #include <QMessageBox>
+#include <stdexcept>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -32,13 +34,14 @@ void MainWindow::on_actionOpen_triggered()
         return;
     }
 
-    // QFile file(path);
-    // if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    //     QMessageBox::warning(this, "Error", "Could not open " + path);
-    //     return;
-    // }
-
-    std::string stdpath = path.toStdString();
-    DataTable table(stdpath);
+    try {
+        DataTable data(path.toStdString());
+        auto *tab = new TableTab(nullptr, data);
+        int index = ui->tabWidget->addTab(tab, QFileInfo(path).fileName());
+        ui->tabWidget->setCurrentIndex(index);
+    }
+    catch (const std::exception &e) {
+        QMessageBox::warning(this, "Error", e.what());
+    }
 }
 
