@@ -16,34 +16,37 @@ public:
     std::vector<std::string> headers() const;
     int rowCount() const;
     int columnCount() const;
-    bool isNumeric(int col) const;
-    void append(std::string header, std::vector<double> column);
-    void remove(int col);
-    void remove(std::string header);
-    void rename(int col, std::string header);
-    void rename(std::string old, std::string header);
-    int find(std::string header) const;
-    std::vector<double> column(int col) const;
-    std::vector<double> column(std::string header) const;
-    std::vector<std::string> textColumn(int col) const;
-    std::vector<std::string> textColumn(std::string header) const;
-    double mean(std::vector<double> a); // not yet implemented
-    double median(std::vector<double> a); // not yet implemented
-    double max(std::vector<double> a); // not yet implemented
-    double min(std::vector<double> a); // not yet implemented
-    double mode(std::vector<double> a, double tolerance); // not yet implemented
-    std::vector<double> add(std::vector<double> a, std::vector<double> b);
-    std::vector<double> mult(std::vector<double>, double);
-    std::vector<double> elprod(std::vector<double> a, std::vector<double> b);
-    std::vector<double> reciprocal(std::vector<double> a);
-    double dotprod(std::vector<double> a, std::vector<double> b);
-    std::vector<double> diff(std::vector<double> dep, std::vector<double> indep); // not yet implemented
-    DataTable slice(int start, int end); // not yet implemented
+    bool isNumeric(const int &col) const;
+    void append(const std::string &header, const std::vector<double> &column);
+    void remove(const int &col);
+    void remove(const std::string &header);
+    void rename(const int &col, const std::string &header);
+    void rename(const std::string &old, const std::string &header);
+    int find(const std::string &header) const;
+    std::vector<double> column(const int &col) const;
+    std::vector<double> column(const std::string &header) const;
+    std::vector<std::string> textColumn(const int &col) const;
+    std::vector<std::string> textColumn(const std::string &header) const;
+    double mean(const std::vector<double> &a) const; // not yet implemented
+    double median(const std::vector<double> &a) const; // not yet implemented
+    double max(const std::vector<double> &a) const; // not yet implemented
+    double min(const std::vector<double> &a) const; // not yet implemented
+    double mode(const std::vector<double> &a, const double &tolerance) const; // not yet implemented
+    std::vector<double> add(const std::vector<double> &a, const std::vector<double> &b) const;
+    std::vector<double> mult(const std::vector<double> &a, const double &s) const;
+    std::vector<double> elprod(const std::vector<double> &a, const std::vector<double> &b) const;
+    std::vector<double> reciprocal(const std::vector<double> &a) const;
+    double dotprod(const std::vector<double> &a, const std::vector<double> &b) const;
+    std::vector<double> diff(const std::vector<double> &dep, const std::vector<double> &indep) const; // not yet implemented
+    DataTable slice(const int &start, const int &end) const; // not yet implemented
+
 private:
     std::vector<std::string> m_headers;
     std::vector<Column> m_columns;
-    std::vector<std::string> split(std::string s, char delim);
-    bool isNumeric(std::string s);
+    char m_delimiter;
+    std::vector<std::string> split(const std::string &s, const char &delim) const;
+    bool allFieldsNumeric(const std::vector<std::string> &in, std::vector<double> &out) const;
+    bool allFieldsNumeric(const std::vector<std::string> &in) const;
 };
 
 #endif // DATATABLE_H

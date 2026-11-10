@@ -22,6 +22,7 @@ void TableTab::SetData(const DataTable &data) {
     int cols = data.columnCount();
     int rows = data.rowCount();
 
+    m_table->setUpdatesEnabled(false);
     m_table->clear();
     m_table->setColumnCount(cols);
     m_table->setRowCount(rows);
@@ -49,4 +50,5 @@ void TableTab::SetData(const DataTable &data) {
             }
         }
     }
+    m_table->setUpdatesEnabled(true);
 }
