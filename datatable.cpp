@@ -19,10 +19,33 @@ DataTable::DataTable(const std::string &path)
     m_headers = split(line, ',');
     m_columns.resize(m_headers.size());
 
+    // determine delimiter
+    int max = 0;
+    char delim = ',';
+    std::string sample;
+    for (int i = 0; i < 10 && std::getline(in, line); i++) {
+        if (!line.empty() && line.back() == '\r') line.pop_back();
+        sample.append(line);
+    }
+    for (char c : {',', '\t', ';', '|', ':'}) {
+        int count = std::count(sample.begin(), sample.end(), c);
+        if (count > max) {
+            delim = c;
+            max = count;
+        }
+    }
+    if (max == 0) {
+        delim = ' ';
+    }
+
+    in.clear();
+    in.seekg(0);
+
+    // read file
     std::vector<std::vector<std::string>> raw(m_columns.size());
     while (std::getline(in, line)) {
         if (!line.empty() && line.back() == '\r') line.pop_back();
-        std::vector<std::string> row = split(line, ',');
+        std::vector<std::string> row = split(line, delim);
         for (int i = 0; i < m_columns.size(); i++) {
             raw[i].push_back(i < row.size() ? row[i] : "");
         }
