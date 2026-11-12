@@ -44,9 +44,10 @@ private:
     std::vector<std::string> m_headers;
     std::vector<Column> m_columns;
     char m_delimiter;
-    std::vector<std::string> split(const std::string &s, const char &delim) const;
-    bool allFieldsNumeric(const std::vector<std::string> &in, std::vector<double> &out) const;
-    bool allFieldsNumeric(const std::vector<std::string> &in) const;
+    void split(const std::string &s, std::vector<std::string_view> &parts, const char &delim) const;
+    void stringVector(const std::vector<std::string_view> &in, std::vector<std::string> &out) const;
+    bool numericVector(const std::vector<std::string_view> &in, std::vector<double> &out) const;
+    bool numericVector(const std::vector<std::string_view> &in) const;
 };
 
 #endif // DATATABLE_H

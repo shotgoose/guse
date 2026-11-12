@@ -2,6 +2,8 @@
 #include <fstream>
 #include <algorithm>
 #include <stdexcept>
+#include <charconv>
+#include <string_view>
 
 //public
 
@@ -37,37 +39,45 @@ DataTable::DataTable(const std::string &path)
     in.clear();
     in.seekg(0);
 
-    // save headers if not numeric, else reset reader
+    // get headers
     std::getline(in, line);
-    std::vector<std::string> rawHeaders = split(line, m_delimiter);
-    std::vector<std::vector<std::string>> raw(rawHeaders.size());
-    if (!allFieldsNumeric(rawHeaders)) {
-        m_headers = rawHeaders;
+    std::vector<std::string_view> hsv; split(line, hsv, m_delimiter);
+    int num_cols = hsv.size();
+    if (!numericVector(hsv)) {
+        stringVector(hsv, m_headers);
     }
     else {
-        m_headers.resize(raw.size());
+        m_headers.resize(num_cols);
         in.clear();
         in.seekg(0);
     }
 
-    // read data and save to raw columns
+    // read data and save to rows and stringview columns
+    std::vector<std::string> srows;
+    std::vector<std::vector<std::string_view>> svcols;
+    srows.reserve(1000000);
+    svcols.reserve(1000000);
+    svcols.resize(num_cols);
+
     while (std::getline(in, line)) {
         if (!line.empty() && line.back() == '\r') line.pop_back();
-        std::vector<std::string> row = split(line, m_delimiter);
-        for (int i = 0; i < raw.size(); i++) {
-            raw[i].push_back(i < row.size() ? row[i] : "");
+        srows.push_back(line);
+        std::vector<std::string_view> svrow; split(srows.back(), svrow, m_delimiter);
+        for (std::size_t i = 0; i < svrow.size(); i++) {
+            svcols[i].push_back(svrow[i]);
         }
     }
 
-    // parse double from numeric columns
-    m_columns.resize(raw.size());
-    for (int i = 0; i < raw.size(); i++) {
+    // parse double from numeric columns, strings otherwise
+    m_columns.reserve(num_cols);
+    for (auto &c : svcols) {
         std::vector<double> nums;
-        if (allFieldsNumeric(raw[i], nums)) {
-            m_columns[i] = std::move(nums);
+        if (numericVector(c, nums)) {
+            m_columns.push_back(nums);
         }
         else {
-            m_columns[i] = std::move(raw[i]);
+            std::vector<std::string> strings; stringVector(c, strings);
+            m_columns.push_back(strings);
         }
     }
 }
@@ -210,49 +220,67 @@ double DataTable::dotprod(const std::vector<double> &a, const std::vector<double
 
 //private
 
-std::vector<std::string> DataTable::split(const std::string &s, const char &delim) const {
-    std::vector<std::string> parts;
-    std::string field;
+void DataTable::split(const std::string &s, std::vector<std::string_view> &parts, const char &delim) const {
     bool quote = false;
-    field.reserve(32);
+    size_t last = 0;
+
     for (std::size_t i = 0; i < s.size(); i++) {
         char c = s[i];
-        if (c == delim && !quote) {
-            parts.push_back(field);
-            field.clear();
-        }
-        else if (c == '"') {
+        if (c == '"') {
             quote = !quote;
         }
-        else {
-            field += c;
+        else if (c == delim && !quote) {
+            std::string_view sv(s.data() + last, i - last);
+            last = i + 1;
+            while (!sv.empty() && sv[0] == '"' || sv[0] == ' ') {
+                sv.remove_prefix(1);
+            }
+            while (!sv.empty() && sv[sv.size() - 1] == '"' || sv[sv.size() - 1] == ' ') {
+                sv.remove_suffix(1);
+            }
+            parts.push_back(sv);
         }
+
     }
-    if (!field.empty()) parts.push_back(field);
-    return parts;
+
+    if (last <= s.size()) {
+        std::string_view sv(s.data() + last, s.size() - last);
+        while (!sv.empty() && ((sv.front() == ' ' || sv.front() == '"'))) {
+            sv.remove_prefix(1);
+        }
+        while (!sv.empty() && ((sv.back() == ' ' || sv.back() == '"'))) {
+            sv.remove_suffix(1);
+        }
+        parts.push_back(sv);
+    }
 }
 
-bool DataTable::allFieldsNumeric(const std::vector<std::string> &in, std::vector<double> &out) const {
+void DataTable::stringVector(const std::vector<std::string_view> &in, std::vector<std::string> &out) const {
     out.clear();
     out.reserve(in.size());
-    for (const auto &s : in) {
-        try {
-            std::size_t pos = 0;
-            double v = s.empty() ? 0.0 : std::stod(s, &pos);
-            if (pos != s.size()) {
-                throw std::invalid_argument("trailing");
-            }
-            out.push_back(v);
-        }
-        catch (std::exception &e) {
+
+    for (auto &s : in) {
+        out.push_back(std::string(s));
+    }
+}
+
+bool DataTable::numericVector(const std::vector<std::string_view> &in, std::vector<double> &out) const {
+    out.clear();
+    out.reserve(in.size());
+
+    for (auto &s : in) {
+        double val = 0.0;
+        auto [ptr, ec] = std::from_chars(s.data(), s.data() + s.size(), val);
+        if (ec != std::errc() || ptr != s.data() + s.size()) {
             out.clear();
             return false;
         }
+        out.push_back(val);
     }
     return true;
 }
 
-bool DataTable::allFieldsNumeric(const std::vector<std::string> &in) const {
+bool DataTable::numericVector(const std::vector<std::string_view> &in) const {
     std::vector<double> out;
-    return allFieldsNumeric(in, out);
+    return numericVector(in, out);
 }
