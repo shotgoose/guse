@@ -37,8 +37,10 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         charttab.h charttab.cpp
         tabletab.h tabletab.cpp
         constants.h
-        tabmanager.h tabmanager.cpp
+
         datatable.h datatable.cpp
+        tablemodel.h tablemodel.cpp
+        tabmanager.h tabmanager.cpp
 
 
     )

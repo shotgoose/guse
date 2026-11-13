@@ -1,6 +1,7 @@
 #include "datatable.h"
 #include <fstream>
 #include <algorithm>
+#include <qvariant.h>
 #include <stdexcept>
 #include <charconv>
 #include <string_view>
@@ -98,7 +99,7 @@ int DataTable::columnCount() const {
     return m_columns.size();
 }
 
-bool DataTable::isNumeric(const int &col) const {
+bool DataTable::isNumeric(int col) const {
     return std::holds_alternative<std::vector<double>>(m_columns.at(col));
 }
 
@@ -110,7 +111,7 @@ void DataTable::append(const std::string &header, const std::vector<double> &col
     m_columns.push_back(column);
 }
 
-void DataTable::remove(const int &col) {
+void DataTable::remove(int col) {
     if (col < 0 || col >= m_columns.size()) {
         throw std::runtime_error("Out of bounds column index");
     }
@@ -122,7 +123,7 @@ void DataTable::remove(const std::string &header) {
     remove(find(header));
 }
 
-void DataTable::rename(const int &col, const std::string &header) {
+void DataTable::rename(int col, const std::string &header) {
     if (col < 0 || col >= m_columns.size()) {
         throw std::runtime_error("Out of bounds column index");
     }
@@ -141,7 +142,7 @@ int DataTable::find(const std::string &header) const {
     return static_cast<int>(it - m_headers.begin());
 }
 
-std::vector<double> DataTable::column(const int &col) const {
+Column DataTable::column(int col) const {
     if (col < 0 || col >= m_columns.size()) {
         throw std::runtime_error("Out of bounds column index");
     }
@@ -151,11 +152,24 @@ std::vector<double> DataTable::column(const int &col) const {
     return std::get<std::vector<double>>(m_columns.at(col));
 }
 
-std::vector<double> DataTable::column(const std::string &header) const {
+Column DataTable::column(const std::string &header) const {
     return column(find(header));
 }
 
-std::vector<std::string> DataTable::textColumn(const int &col) const {
+QVariant DataTable::entry(int row, int col) const {
+    return std::visit([row](const auto &vec) {
+        auto &val = vec[row];
+
+        using T = std::decay_t<decltype(val)>;
+        if constexpr (std::is_same_v<T, std::string>) {
+            return QVariant(QString::fromStdString(val));
+        } else {
+            return QVariant(val);
+        }
+    }, m_columns[col]);
+}
+
+std::vector<std::string> DataTable::textColumn(int col) const {
     if (col < 0 || col >= m_columns.size()) {
         throw std::runtime_error("Out of bounds column index");
     }

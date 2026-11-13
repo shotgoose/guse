@@ -7,7 +7,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QMessageBox>
-#include <stdexcept>
+#include <QVariant>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)

@@ -1,6 +1,7 @@
 #ifndef TABLETAB_H
 #define TABLETAB_H
 #include "datatable.h"
+#include <QVariant>
 #include <QWidget>
 #include <QTableWidget>
 
@@ -11,7 +12,7 @@ public:
     explicit TableTab(QWidget *parent = nullptr, const DataTable &data = DataTable());
     void SetData(const DataTable &data);
 private:
-    QTableWidget *m_table;
+    QTableView *m_table;
 
 signals:
 };

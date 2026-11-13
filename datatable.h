@@ -4,6 +4,7 @@
 #include <vector>
 #include <QVector>
 #include <QString>
+#include <QVariant>
 #include <variant>
 
 using Column = std::variant<std::vector<double>, std::vector<std::string>>;
@@ -16,16 +17,17 @@ public:
     std::vector<std::string> headers() const;
     int rowCount() const;
     int columnCount() const;
-    bool isNumeric(const int &col) const;
+    bool isNumeric(int col) const;
     void append(const std::string &header, const std::vector<double> &column);
-    void remove(const int &col);
+    void remove(int col);
     void remove(const std::string &header);
-    void rename(const int &col, const std::string &header);
+    void rename(int col, const std::string &header);
     void rename(const std::string &old, const std::string &header);
     int find(const std::string &header) const;
-    std::vector<double> column(const int &col) const;
-    std::vector<double> column(const std::string &header) const;
-    std::vector<std::string> textColumn(const int &col) const;
+    Column column(int col) const;
+    Column column(const std::string &header) const;
+    QVariant entry(int row, int col) const;
+    std::vector<std::string> textColumn(int col) const;
     std::vector<std::string> textColumn(const std::string &header) const;
     double mean(const std::vector<double> &a) const; // not yet implemented
     double median(const std::vector<double> &a) const; // not yet implemented
@@ -38,7 +40,7 @@ public:
     std::vector<double> reciprocal(const std::vector<double> &a) const;
     double dotprod(const std::vector<double> &a, const std::vector<double> &b) const;
     std::vector<double> diff(const std::vector<double> &dep, const std::vector<double> &indep) const; // not yet implemented
-    DataTable slice(const int &start, const int &end) const; // not yet implemented
+    DataTable slice(int start, int end) const; // not yet implemented
 
 private:
     std::vector<std::string> m_headers;
