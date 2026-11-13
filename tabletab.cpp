@@ -15,6 +15,9 @@ TableTab::TableTab(QWidget *parent, const DataTable &data)
     m_table->setModel(model);
     layout->addWidget(m_table);
 
+    m_table->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive); // Or QHeaderView::Fixed
+    m_table->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
+    m_table->verticalHeader()->setDefaultSectionSize(24);
     m_table->setEditTriggers(QAbstractItemView::NoEditTriggers);   // read-only
     m_table->setAlternatingRowColors(true);
     m_table->setItemDelegate(new QStyledItemDelegate(m_table));
